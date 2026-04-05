@@ -8,7 +8,7 @@ gender: "女"
 relationship: "本人"
 type: "individual"
 tags: ["戊子日主", "偏財格", "2026年"]
-screenshot: ""
+screenshot: "/screenshots/2026-04-05-ohsiro-maria0.png"
 nikushi: "戊子"
 kakukyoku: "偏財格"
 youjin: "火"
