@@ -1,7 +1,7 @@
 ---
-title: "ohshiro maria の四柱推命鑑定"
+title: "大代真麗愛 の四柱推命鑑定"
 date: "2026-04-05"
-person: "ohshiro maria"
+person: "大代真麗愛"
 birthDate: "1995-11-01"
 birthTime: "13:08"
 gender: "女"
@@ -193,6 +193,3 @@ youjin: "火"
 ---
 
 **鑑定日：2026年4月5日**
-
-**補足：** スクリーンショットがあれば `public/screenshots/2026-04-05_ohshiro-maria.png` に保存し、
-`readings/2026-04-05_ohshiro-maria.md` の `screenshot` にパスを追記してください。
