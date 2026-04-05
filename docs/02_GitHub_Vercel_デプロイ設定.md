@@ -9,15 +9,15 @@ GitHub リポジトリを作成し、Vercel と連携して自動デプロイを
 ## Todo
 
 ### GitHub
-- [ ] GitHub でリポジトリを作成（例: `shicyu-blog`）
-- [ ] ローカルで `git init` → `git remote add origin <URL>`
-- [ ] 初回コミット・push を実行
+- [×] GitHub でリポジトリを作成（`kou56250046-cloud/shicyu-blog`）
+- [×] ローカルで `git init` → `git remote add origin` 設定済み
+- [×] 初回コミット・push を実行
 
 ### Vercel
-- [ ] Vercel アカウントで「Add New Project」
-- [ ] GitHub リポジトリを連携
-- [ ] Framework Preset: Next.js を選択
-- [ ] デプロイを実行し、発行された URL でアクセスできることを確認
+- [×] Vercel アカウントで「Add New Project」
+- [×] GitHub リポジトリを連携（`kou56250046-cloud/shicyu-blog`）
+- [×] Framework Preset: Next.js を確認
+- [×] デプロイ完了・URL 発行済み
 
 ### 動作確認
 - [ ] `readings/` に md を追加して push → Vercel が自動デプロイされることを確認
