@@ -1,36 +1,98 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# scripts/ — Five Agents 自動操作スクリプト
 
-## Getting Started
+## 概要
 
-First, run the development server:
+Playwright を使って Five Agents XE3（Electronデスクトップアプリ）を自動操作し、
+四柱推命の命式スクリーンショットを取得するスクリプト群。
+
+## セットアップ（初回のみ）
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# プロジェクトルートで実行
+npm install
+npm install -D playwright @playwright/test ts-node typescript
+npx playwright install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 使い方
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 基本コマンド
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npx ts-node scripts/capture.ts \
+  --name "Kohei" \
+  --birth "1985-03-15" \
+  --time "14:30" \
+  --gender "男" \
+  --relationship "本人"
+```
 
-## Learn More
+### 引数一覧
 
-To learn more about Next.js, take a look at the following resources:
+| 引数 | 必須 | 形式 | 例 |
+|------|------|------|-----|
+| `--name` | ✅ | 文字列 | `"Kohei"` |
+| `--birth` | ✅ | YYYY-MM-DD | `"1985-03-15"` |
+| `--time` | ✅ | HH:MM | `"14:30"` |
+| `--gender` | ✅ | 男 / 女 | `"男"` |
+| `--relationship` | ❌ | 文字列 | `"妻"` |
+| `--year` | ❌ | YYYY | `"2026"` |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 出力ファイル
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+screenshots/YYYY-MM-DD_{name}.png
+```
 
-## Deploy on Vercel
+## トラブルシューティング
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Five Agents が起動しない
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+Error: Five Agents を起動できませんでした
+```
+
+→ `capture.ts` の `FIVE_AGENTS_PATH` を確認してください：
+
+```typescript
+const FIVE_AGENTS_PATH = 'C:\\Users\\kou56\\OneDrive\\デスクトップ\\Five Agents XE3.lnk'
+```
+
+パスが違う場合は上記を修正してください。
+
+### セレクタが見つからない
+
+```
+Error: Element not found: [セレクタ名]
+```
+
+→ Five Agents のウィンドウが完全に表示された状態かを確認してください。
+  `--slow` オプションを追加してデバッグモードで実行できます：
+
+```bash
+npx ts-node scripts/capture.ts --name "Test" --birth "1990-01-01" --time "12:00" --gender "男" --slow
+```
+
+### スクリーンショットが保存されない
+
+`screenshots/` フォルダが存在するか確認してください：
+
+```bash
+mkdir -p screenshots
+```
+
+## capture.ts の実装について
+
+> ⚠️ このスクリプトは Claude Code（VSCode）に実装を依頼してください。
+> 
+> Five Agents の UI 構造（セレクタ・ウィンドウタイトル等）は
+> 実際のアプリを起動して確認する必要があります。
+> 
+> Claude Code チャットで以下のように依頼してください：
+>
+> ```
+> CLAUDE.md を参照して、scripts/capture.ts を実装してください。
+> Five Agents XE3 の UI を Playwright で操作するスクリプトです。
+> まず Five Agents を起動して UI 構造を確認し、
+> 適切なセレクタを使って実装してください。
+> ```

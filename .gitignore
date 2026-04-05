@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local screenshots (作業用スクショ。公開用は public/screenshots/ を使う)
+/screenshots
