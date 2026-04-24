@@ -1,4 +1,8 @@
+'use client'
+
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
 const navLinks = [
   { href: '/', label: '四柱推命' },
@@ -11,25 +15,48 @@ const navLinks = [
 ]
 
 export default function Header() {
+  const pathname = usePathname()
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    const handler = () => setScrolled(window.scrollY > 10)
+    window.addEventListener('scroll', handler, { passive: true })
+    return () => window.removeEventListener('scroll', handler)
+  }, [])
+
   return (
-    <header className="bg-indigo-950 text-white shadow-md">
-      <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
+    <header
+      className={`sticky top-0 z-50 bg-white transition-shadow duration-300 ${
+        scrolled ? 'shadow-md' : 'border-b border-gray-100'
+      }`}
+    >
+      <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         <Link
           href="/"
-          className="text-base font-semibold tracking-wide hover:text-indigo-200 transition-colors"
+          className="text-sm font-black tracking-[0.2em] text-[#0D7377] uppercase hover:text-[#14A085] transition-colors"
         >
-          ☯ 四柱推命鑑定
+          FORTUNE ARCHIVE
         </Link>
-        <nav className="flex items-center gap-1">
-          {navLinks.map(({ href, label }) => (
-            <Link
-              key={href}
-              href={href}
-              className="px-3 py-1.5 text-sm rounded-md hover:bg-indigo-800 transition-colors"
-            >
-              {label}
-            </Link>
-          ))}
+        <nav className="flex items-center">
+          {navLinks.map(({ href, label }) => {
+            const isActive = pathname === href
+            return (
+              <Link
+                key={href}
+                href={href}
+                className={`relative px-3 py-2 text-sm font-medium transition-colors ${
+                  isActive
+                    ? 'text-[#0D7377]'
+                    : 'text-gray-500 hover:text-[#14A085]'
+                }`}
+              >
+                {label}
+                {isActive && (
+                  <span className="absolute bottom-0 left-3 right-3 h-0.5 bg-[#14A085] rounded-full" />
+                )}
+              </Link>
+            )
+          })}
         </nav>
       </div>
     </header>

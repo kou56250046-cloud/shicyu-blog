@@ -23,13 +23,19 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ja" className={notoSansJP.className}>
-      <body className="min-h-screen flex flex-col bg-stone-50 text-stone-900">
+      <body className="min-h-screen flex flex-col bg-white text-stone-900">
         <Header />
-        <main className="flex-1 w-full max-w-5xl mx-auto px-4 py-8">
-          {children}
-        </main>
-        <footer className="text-center text-xs text-stone-400 py-6 border-t border-stone-200">
-          © 2026 四柱推命鑑定ブログ — Five Agents × Claude Code
+        <main className="flex-1 w-full">{children}</main>
+        <footer className="bg-[#1A3557] text-white">
+          <div className="max-w-6xl mx-auto px-4 py-10 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-black tracking-[0.2em] text-[#4ECDC4] uppercase mb-1">
+                FORTUNE ARCHIVE
+              </p>
+              <p className="text-xs text-gray-400">Five Agents × Claude Code</p>
+            </div>
+            <p className="text-xs text-gray-400">© 2026 四柱推命鑑定ブログ</p>
+          </div>
         </footer>
       </body>
     </html>

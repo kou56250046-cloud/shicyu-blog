@@ -1,29 +1,30 @@
 import Link from 'next/link'
 import type { Reading } from '@/lib/readings'
 
-const TYPE_LABELS: Record<string, { label: string; className: string }> = {
-  compatibility: { label: '相性', className: 'bg-rose-100 text-rose-600' },
-  fuusui: { label: '風水', className: 'bg-emerald-100 text-emerald-700' },
-  astrology: { label: '占星術', className: 'bg-violet-100 text-violet-700' },
-  sanmei: { label: '算命学', className: 'bg-orange-100 text-orange-700' },
-  numerology: { label: '数秘術', className: 'bg-sky-100 text-sky-700' },
+const TYPE_CONFIG: Record<string, { en: string; cls: string }> = {
+  individual:    { en: 'BAZI',        cls: 'bg-[#f0fafa] text-[#0D7377]' },
+  compatibility: { en: 'COMPAT',      cls: 'bg-rose-50 text-rose-600' },
+  fuusui:        { en: 'FENG SHUI',   cls: 'bg-[#f0fafa] text-[#0D7377]' },
+  astrology:     { en: 'ASTROLOGY',   cls: 'bg-violet-50 text-violet-700' },
+  sanmei:        { en: 'SANMEI',      cls: 'bg-orange-50 text-orange-700' },
+  numerology:    { en: 'NUMEROLOGY',  cls: 'bg-sky-50 text-sky-700' },
 }
 
 export default function ReadingCard({ reading }: { reading: Reading }) {
-  const typeLabel = TYPE_LABELS[reading.type]
+  const cfg = TYPE_CONFIG[reading.type]
 
   return (
     <Link
       href={`/readings/${reading.slug}`}
-      className="block bg-white rounded-xl border border-stone-200 p-5 hover:shadow-md hover:border-indigo-300 transition-all"
+      className="card-teal shimmer-hover block bg-white rounded-xl p-5 group h-full"
     >
       <div className="flex items-start justify-between gap-2 mb-2">
-        <h2 className="text-base font-semibold text-stone-800 leading-snug">
+        <h2 className="text-sm font-semibold text-stone-800 leading-snug group-hover:text-[#0D7377] transition-colors">
           {reading.title}
         </h2>
-        {typeLabel && (
-          <span className={`shrink-0 text-xs px-2 py-0.5 rounded-full ${typeLabel.className}`}>
-            {typeLabel.label}
+        {cfg && (
+          <span className={`shrink-0 text-[10px] font-black px-2 py-0.5 rounded-full tracking-wider ${cfg.cls}`}>
+            {cfg.en}
           </span>
         )}
       </div>
@@ -31,63 +32,27 @@ export default function ReadingCard({ reading }: { reading: Reading }) {
       <p className="text-xs text-stone-400 mb-3">{reading.date}</p>
 
       <div className="flex flex-wrap gap-1.5">
-        {/* 四柱推命・算命学 */}
-        {reading.nikushi && (
-          <Badge label="日主" value={reading.nikushi} color="indigo" />
-        )}
-        {reading.kakukyoku && (
-          <Badge label="格局" value={reading.kakukyoku} color="amber" />
-        )}
-        {reading.youjin && (
-          <Badge label="用神" value={reading.youjin} color="teal" />
-        )}
-        {/* 算命学 */}
-        {reading.chuseiStar && (
-          <Badge label="中心星" value={reading.chuseiStar} color="orange" />
-        )}
-        {/* 西洋占星術 */}
-        {reading.sunSign && (
-          <Badge label="太陽" value={reading.sunSign} color="amber" />
-        )}
-        {reading.ascendant && (
-          <Badge label="AS" value={reading.ascendant} color="violet" />
-        )}
-        {/* 風水 */}
-        {reading.kuaNumber != null && (
-          <Badge label="卦数" value={String(reading.kuaNumber)} color="emerald" />
-        )}
-        {reading.group && (
-          <Badge label="" value={reading.group} color="emerald" />
-        )}
-        {/* 数秘術 */}
-        {reading.lifePathNumber != null && (
-          <Badge label="LP" value={String(reading.lifePathNumber)} color="sky" />
-        )}
+        {reading.nikushi && <Chip label="日主" value={reading.nikushi} />}
+        {reading.kakukyoku && <Chip label="格局" value={reading.kakukyoku} />}
+        {reading.youjin && <Chip label="用神" value={reading.youjin} />}
+        {reading.chuseiStar && <Chip label="中心星" value={reading.chuseiStar} />}
+        {reading.sunSign && <Chip label="太陽" value={reading.sunSign} />}
+        {reading.ascendant && <Chip label="AS" value={reading.ascendant} />}
+        {reading.kuaNumber != null && <Chip label="卦数" value={String(reading.kuaNumber)} />}
+        {reading.group && <Chip label="" value={reading.group} />}
+        {reading.lifePathNumber != null && <Chip label="LP" value={String(reading.lifePathNumber)} />}
       </div>
+
+      <p className="mt-3 text-right text-[#14A085] text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+        詳しく見る →
+      </p>
     </Link>
   )
 }
 
-function Badge({
-  label,
-  value,
-  color,
-}: {
-  label: string
-  value: string
-  color: 'indigo' | 'amber' | 'teal' | 'orange' | 'violet' | 'emerald' | 'sky'
-}) {
-  const styles = {
-    indigo: 'bg-indigo-50 text-indigo-700',
-    amber: 'bg-amber-50 text-amber-700',
-    teal: 'bg-teal-50 text-teal-700',
-    orange: 'bg-orange-50 text-orange-700',
-    violet: 'bg-violet-50 text-violet-700',
-    emerald: 'bg-emerald-50 text-emerald-700',
-    sky: 'bg-sky-50 text-sky-700',
-  }
+function Chip({ label, value }: { label: string; value: string }) {
   return (
-    <span className={`text-xs px-2 py-0.5 rounded-full ${styles[color]}`}>
+    <span className="text-xs bg-[#f0fafa] text-[#0D7377] px-2 py-0.5 rounded-full border border-[#c8eeec]">
       {label ? `${label}: ${value}` : value}
     </span>
   )

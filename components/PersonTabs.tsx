@@ -9,6 +9,8 @@ type Props = {
   people: string[]
 }
 
+const ANIM_CLASSES = ['anim-up-1', 'anim-up-2', 'anim-up-3', 'anim-up-4']
+
 export default function PersonTabs({ readings, people }: Props) {
   const router = useRouter()
   const pathname = usePathname()
@@ -46,10 +48,10 @@ export default function PersonTabs({ readings, people }: Props) {
           <button
             key={tab}
             onClick={() => setSelected(tab)}
-            className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+            className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
               selected === tab
-                ? 'bg-indigo-950 text-white'
-                : 'bg-white text-stone-600 border border-stone-200 hover:border-indigo-300'
+                ? 'bg-[#0D7377] text-white shadow-sm'
+                : 'bg-white text-stone-600 border border-stone-200 hover:border-[#14A085] hover:text-[#14A085]'
             }`}
           >
             {tab}
@@ -61,9 +63,11 @@ export default function PersonTabs({ readings, people }: Props) {
       {filtered.length === 0 ? (
         <p className="text-center text-stone-400 py-16">記事がありません</p>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2">
-          {filtered.map((reading) => (
-            <ReadingCard key={reading.slug} reading={reading} />
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {filtered.map((reading, i) => (
+            <div key={reading.slug} className={ANIM_CLASSES[i % 4]}>
+              <ReadingCard reading={reading} />
+            </div>
           ))}
         </div>
       )}
