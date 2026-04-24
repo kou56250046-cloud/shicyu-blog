@@ -6,19 +6,30 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## プロジェクト概要
 
-Five Agentsアプリ（Electronデスクトップ）で四柱推命の命式を表示し、
-手動でスクリーンショットを撮影。チャットに貼り付けると
-Claude が画像を読み解いて詳細鑑定文を Markdown で生成・保存するシステム。
+四柱推命・風水・西洋占星術・算命学・数秘術の5種類の鑑定に対応した占いブログシステム。
+テキスト入力または画像（スクリーンショット）を Claude に渡すと、
+各占いの解析ガイド（`docs/` ディレクトリ）に従って詳細鑑定文を Markdown で生成・保存する。
 生成された md ファイルを GitHub にプッシュすると Vercel が自動デプロイし、
 スマホ・PC どこからでも鑑定記事を閲覧できる。
 
 ## プロジェクトの現状
 
-- Next.js 14（App Router）のセットアップ済み（`package.json` あり）
+- Next.js（App Router）のセットアップ済み（`package.json` あり）
 - `gray-matter` / `remark` / `remark-html` インストール済み
-- Five Agents の操作は**手動**（ユーザーが操作してスクリーンショットをチャットに送る）
+- 対応占い: **四柱推命・風水・西洋占星術・算命学・数秘術**
+- 各占いの解析ガイド: `docs/` ディレクトリを参照
 - GitHub リポジトリ: `kou56250046-cloud/shicyu-blog`（設定済み）
 - Vercel: `main` push で自動デプロイ（設定済み）
+
+## 解析ガイド一覧
+
+| 占い | ガイドファイル | 主な入力 |
+|------|-------------|---------|
+| 四柱推命 | `docs/shicyu_analysis_guide.md` | スクリーンショット + 生年月日・時刻・性別 |
+| 風水 | `docs/fuusui_guide.md` | 間取り図画像 + 生年月日・性別・建築年・座向 |
+| 西洋占星術 | `docs/astrology_guide.md` | 生年月日・出生時刻・都道府県 |
+| 算命学 | `docs/sanmei_guide.md` | 生年月日・出生時刻・性別 |
+| 数秘術 | `docs/numerology_guide.md` | 生年月日・氏名（ひらがな・アルファベット） |
 
 ---
 
@@ -52,16 +63,26 @@ npm run lint         # ESLint 実行
 ```
 四柱推命鑑定/
 ├── CLAUDE.md                        ← この指示書
-├── 個人鑑定テンプレート.md           ← 個人鑑定の記入済みサンプル
+├── 個人鑑定テンプレート.md           ← 四柱推命の記入済みサンプル
 ├── 相性鑑定テンプレート.md           ← 相性鑑定の記入済みサンプル
+├── docs/                            ← 各占いの解析ガイド（Claudeへの指示書）
+│   ├── shicyu_analysis_guide.md    ← 四柱推命解析ガイド
+│   ├── fuusui_guide.md             ← 風水解析ガイド
+│   ├── astrology_guide.md          ← 西洋占星術解析ガイド
+│   ├── sanmei_guide.md             ← 算命学解析ガイド
+│   └── numerology_guide.md         ← 数秘術解析ガイド
 ├── readings/                        ← 鑑定mdファイルを置く場所
 │   └── YYYY-MM-DD_名前.md
 ├── screenshots/                     ← スクリーンショット（ローカル作業用・git管理外）
 │   └── YYYY-MM-DD_名前.png
 ├── app/                             ← Next.js ブログアプリ
-│   ├── page.tsx                     ← 記事一覧
-│   ├── readings/[slug]/page.tsx     ← 個別記事
-│   └── compatibility/page.tsx      ← 相性鑑定一覧
+│   ├── page.tsx                     ← 四柱推命一覧
+│   ├── readings/[slug]/page.tsx     ← 個別記事（全占い共通）
+│   ├── compatibility/page.tsx      ← 相性鑑定一覧
+│   ├── fuusui/page.tsx             ← 風水鑑定一覧
+│   ├── astrology/page.tsx          ← 西洋占星術鑑定一覧
+│   ├── sanmei/page.tsx             ← 算命学鑑定一覧
+│   └── numerology/page.tsx         ← 数秘術鑑定一覧
 ├── lib/
 │   └── readings.ts                  ← mdファイル読み込みユーティリティ
 └── public/
@@ -152,7 +173,10 @@ readings/{filename}.md として保存してください。
 
 ## mdファイルのフォーマット仕様
 
-readings/ 以下のファイルは以下のフロントマターに従うこと。
+readings/ 以下のファイルは占い種類に応じたフロントマターに従うこと。
+`type` フィールドの値: `individual` | `compatibility` | `fuusui` | `astrology` | `sanmei` | `numerology`
+
+### 四柱推命（type: "individual"）
 
 ```yaml
 ---
@@ -163,7 +187,7 @@ birthDate: "YYYY-MM-DD"
 birthTime: "HH:MM"
 gender: "男 | 女"
 relationship: "本人 | 妻 | 夫 | 子 | 父 | 母 | その他"
-type: "individual | compatibility"
+type: "individual"
 tags: ["{日主}日主", "{格局}", "{流年}年運勢"]
 screenshot: "/screenshots/YYYY-MM-DD_{name}.png"
 nikushi: "{日主の干支}"
@@ -184,6 +208,178 @@ youjin: "{用神}"
 8. `## ⚡ 転換期・注意すべき時期` — 刑冲害が発動する時期
 9. `## 💑 相性メモ`（compatibilityの場合のみ）
 10. `## 📝 総評` — 人生テーマと今後へのメッセージ
+
+---
+
+### 風水（type: "fuusui"）
+
+**解析ガイド**: `docs/fuusui_guide.md` の手順に従うこと。
+**入力**: 間取り図画像（チャットに投下）+ テキスト情報
+
+```yaml
+---
+title: "{name} の風水鑑定"
+date: "YYYY-MM-DD"
+person: "{name}"
+birthDate: "YYYY-MM-DD"
+gender: "男 | 女"
+relationship: "本人 | 妻 | 夫 | その他"
+type: "fuusui"
+tags: ["卦数{n}", "{東四命 or 西四命}", "2026年風水"]
+screenshot: "/screenshots/YYYY-MM-DD_{name}_floor.png"
+kuaNumber: {数字}
+group: "{東四命 or 西四命}"
+---
+```
+
+**セクション構成**: `docs/fuusui_guide.md` の「鑑定文の出力形式」を参照。
+
+**プロンプトテンプレート**:
+
+```
+（間取り図のスクリーンショットを貼り付け）
+
+docs/fuusui_guide.md の解析手順チェックリストに沿って風水鑑定を行い、
+readings/{filename}.md として保存してください。
+
+【対象者情報】
+- 名前: {name}
+- 生年月日: {birthDate}
+- 性別: {gender}
+- 続柄: {relationship}
+
+【物件情報】
+- 建築年: {buildYear}年
+- 玄関の向き（方位）: {direction}
+- スクリーンショット: {screenshotFile}
+```
+
+---
+
+### 西洋占星術（type: "astrology"）
+
+**解析ガイド**: `docs/astrology_guide.md` の手順に従うこと。
+**入力**: テキスト情報のみ（画像不要）
+
+```yaml
+---
+title: "{name} の西洋占星術鑑定"
+date: "YYYY-MM-DD"
+person: "{name}"
+birthDate: "YYYY-MM-DD"
+birthTime: "HH:MM"
+gender: "男 | 女"
+relationship: "本人 | 妻 | 夫 | 子 | 父 | 母 | その他"
+type: "astrology"
+tags: ["{太陽星座}", "{ASC}上昇", "2026年運勢"]
+birthPlace: "{都道府県}"
+sunSign: "{太陽星座}"
+moonSign: "{月星座}"
+ascendant: "{アセンダント星座}"
+---
+```
+
+**セクション構成**: `docs/astrology_guide.md` の「鑑定文の出力形式」を参照。
+
+**プロンプトテンプレート**:
+
+```
+docs/astrology_guide.md の解析手順チェックリストに沿って西洋占星術（ホロスコープ）鑑定を行い、
+readings/{filename}.md として保存してください。
+
+【対象者情報】
+- 名前: {name}
+- 生年月日: {birthDate}
+- 出生時刻: {birthTime}
+- 出生地（都道府県）: {prefecture}
+- 性別: {gender}
+- 続柄: {relationship}
+- 鑑定日: {readingDate}年
+```
+
+---
+
+### 算命学（type: "sanmei"）
+
+**解析ガイド**: `docs/sanmei_guide.md` の手順に従うこと。
+**入力**: テキスト情報のみ（四柱推命と同じ入力項目）
+
+```yaml
+---
+title: "{name} の算命学鑑定"
+date: "YYYY-MM-DD"
+person: "{name}"
+birthDate: "YYYY-MM-DD"
+birthTime: "HH:MM"
+gender: "男 | 女"
+relationship: "本人 | 妻 | 夫 | 子 | 父 | 母 | その他"
+type: "sanmei"
+tags: ["{日干}日主", "{中心星}", "2026年算命"]
+chuseiStar: "{中心星}"
+guardianGod: "{守護神の五行}"
+tenchusatsu: "{天中殺の種類}"
+---
+```
+
+**セクション構成**: `docs/sanmei_guide.md` の「鑑定文の出力形式」を参照。
+
+**プロンプトテンプレート**:
+
+```
+docs/sanmei_guide.md の解析手順チェックリストに沿って算命学鑑定を行い、
+readings/{filename}.md として保存してください。
+
+【対象者情報】
+- 名前: {name}
+- 生年月日: {birthDate}
+- 出生時刻: {birthTime}
+- 性別: {gender}
+- 続柄: {relationship}
+- 鑑定日: {readingDate}年
+```
+
+---
+
+### 数秘術（type: "numerology"）
+
+**解析ガイド**: `docs/numerology_guide.md` の手順に従うこと。
+**入力**: テキスト情報のみ
+
+```yaml
+---
+title: "{name} の数秘術鑑定"
+date: "YYYY-MM-DD"
+person: "{name}"
+birthDate: "YYYY-MM-DD"
+gender: "男 | 女"
+relationship: "本人 | 妻 | 夫 | 子 | 父 | 母 | その他"
+type: "numerology"
+tags: ["ライフパス{n}", "ディスティニー{n}", "2026年個人年{n}"]
+lifePathNumber: {数字}
+destinyNumber: {数字}
+soulNumber: {数字}
+personalityNumber: {数字}
+personalYear2026: {数字}
+---
+```
+
+**セクション構成**: `docs/numerology_guide.md` の「鑑定文の出力形式」を参照。
+
+**プロンプトテンプレート**:
+
+```
+docs/numerology_guide.md の解析手順チェックリストに沿って数秘術鑑定を行い、
+readings/{filename}.md として保存してください。
+
+【対象者情報】
+- 名前: {name}
+- 生年月日: {birthDate}（西暦）
+- 氏名（ひらがな）: {nameHiragana}
+- 氏名（アルファベット）: {nameAlpha}
+- 性別: {gender}
+- 続柄: {relationship}
+- 鑑定日: {readingDate}年
+```
 
 ---
 
@@ -241,9 +437,13 @@ screenshot2: "/screenshots/YYYY-MM-DD_{名前B}.png"
 
 | パス | 説明 |
 |------|------|
-| `/` | 鑑定記事一覧（人物別タブ・日付順） |
-| `/readings/[slug]` | 個別鑑定記事（スクショ＋解説） |
+| `/` | 四柱推命鑑定一覧（人物別タブ・日付順） |
+| `/readings/[slug]` | 個別鑑定記事（全占い共通） |
 | `/compatibility` | 相性鑑定一覧 |
+| `/fuusui` | 風水鑑定一覧 |
+| `/astrology` | 西洋占星術鑑定一覧 |
+| `/sanmei` | 算命学鑑定一覧 |
+| `/numerology` | 数秘術鑑定一覧 |
 | `/people` | 登録人物一覧 |
 
 ---

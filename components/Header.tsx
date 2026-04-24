@@ -1,7 +1,11 @@
 import Link from 'next/link'
 
 const navLinks = [
-  { href: '/', label: '鑑定一覧' },
+  { href: '/', label: '四柱推命' },
+  { href: '/fuusui', label: '風水' },
+  { href: '/astrology', label: '占星術' },
+  { href: '/sanmei', label: '算命学' },
+  { href: '/numerology', label: '数秘術' },
   { href: '/compatibility', label: '相性鑑定' },
   { href: '/people', label: '人物一覧' },
 ]
