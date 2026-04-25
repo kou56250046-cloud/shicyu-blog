@@ -12,6 +12,7 @@ const navLinks = [
   { href: '/numerology', label: '数秘術' },
   { href: '/compatibility', label: '相性鑑定' },
   { href: '/people', label: '人物一覧' },
+  { href: '/realestate', label: '物件探し' },
 ]
 
 export default function Header() {
