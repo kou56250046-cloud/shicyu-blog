@@ -8,6 +8,7 @@ export type ReportFrontmatter = {
   title: string
   date: string
   type: string
+  subtitle?: string
   target?: string
   areas?: string[]
   recommendation?: string
@@ -51,4 +52,11 @@ export async function getReport(slug: string): Promise<Report | null> {
   const fullPath = path.join(reportsDir, filename)
   if (!fs.existsSync(fullPath)) return null
   return parseReportFile(filename)
+}
+
+export function getAllReportSlugs(): string[] {
+  if (!fs.existsSync(reportsDir)) return []
+  return fs.readdirSync(reportsDir)
+    .filter((f) => f.endsWith('.md'))
+    .map((f) => f.replace(/\.md$/, ''))
 }

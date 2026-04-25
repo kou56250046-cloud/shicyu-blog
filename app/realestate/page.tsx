@@ -1,25 +1,17 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { getAllReports } from '@/lib/reports'
 
 export const metadata: Metadata = {
   title: '物件探し・引越し鑑定',
 }
 
-const RANK_COLOR: Record<string, string> = {
-  '1': 'bg-amber-400 text-white',
-  '2': 'bg-stone-400 text-white',
-  '3': 'bg-amber-700 text-white',
-}
-
-const AREA_RANK: Record<string, { rank: string; label: string; color: string }> = {
-  府中市:    { rank: '2', label: '次点', color: 'border-stone-400 bg-stone-50' },
-  稲城市:    { rank: '1', label: '最推奨', color: 'border-amber-400 bg-amber-50' },
-  '多摩市（京王永山）': { rank: '3', label: '参考', color: 'border-amber-700 bg-orange-50' },
+const TYPE_BADGE: Record<string, { label: string; color: string }> = {
+  realestate: { label: '物件・引越し', color: 'bg-teal-100 text-teal-700' },
 }
 
 export default async function RealEstatePage() {
   const reports = await getAllReports()
-  const report = reports[0] ?? null
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
@@ -31,109 +23,90 @@ export default async function RealEstatePage() {
         </p>
         <h1 className="text-2xl font-bold text-stone-800 mb-1">物件探し・引越し先 鑑定</h1>
         <p className="text-sm text-stone-500">
-          四柱推命・算命学・西洋占星術の統合分析による引越し先・持ち家購入アドバイス
+          四柱推命・算命学・西洋占星術・気学九星・風水・数秘術による引越し先・持ち家アドバイス
         </p>
       </div>
 
-      {!report ? (
+      {reports.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 text-center">
           <p className="text-4xl mb-4">🏠</p>
           <p className="text-stone-400 text-sm">レポートがまだありません</p>
         </div>
       ) : (
-        <>
-          {/* サマリーカード */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
-            <SummaryCard label="鑑定対象" value={report.target ?? '—'} icon="👨‍👩‍👧" />
-            <SummaryCard label="最推奨エリア" value={report.recommendation ?? '—'} icon="📍" accent />
-            <SummaryCard label="引越し予定" value={report.moveDate ?? '—'} icon="📦" />
-            <SummaryCard label="購入目標時期" value={report.purchaseTarget ?? '—'} icon="🏡" />
-          </div>
+        <div className="flex flex-col gap-4">
+          {reports.map((report) => {
+            const badge = TYPE_BADGE[report.type] ?? { label: report.type, color: 'bg-stone-100 text-stone-500' }
+            return (
+              <Link
+                key={report.slug}
+                href={`/realestate/${report.slug}`}
+                className="group block bg-white rounded-xl border border-stone-200 p-6 hover:border-[#0D7377] hover:shadow-md transition-all"
+              >
+                <div className="flex items-start justify-between gap-4 mb-3">
+                  <div className="flex-1 min-w-0">
+                    <span className={`inline-block text-xs px-2 py-0.5 rounded-full mb-2 ${badge.color}`}>
+                      {badge.label}
+                    </span>
+                    <h2 className="text-base font-bold text-stone-800 group-hover:text-[#0D7377] transition-colors leading-snug">
+                      {report.title}
+                    </h2>
+                  </div>
+                  <span className="text-xs text-stone-400 shrink-0 mt-1">{report.date}</span>
+                </div>
 
-          {/* エリアランキング */}
-          {report.areas && report.areas.length > 0 && (
-            <div className="mb-8">
-              <h2 className="text-sm font-bold text-stone-500 uppercase tracking-widest mb-3">
-                エリア比較ランキング
-              </h2>
-              <div className="grid sm:grid-cols-3 gap-3">
-                {report.areas.map((area) => {
-                  const info = AREA_RANK[area]
-                  if (!info) return null
-                  return (
-                    <div
-                      key={area}
-                      className={`rounded-xl border-2 p-4 ${info.color}`}
-                    >
-                      <div className="flex items-center gap-2 mb-2">
-                        <span
-                          className={`text-xs font-black w-6 h-6 rounded-full flex items-center justify-center ${RANK_COLOR[info.rank]}`}
-                        >
-                          {info.rank}
-                        </span>
-                        <span className="text-xs font-bold text-stone-500">{info.label}</span>
-                      </div>
-                      <p className="font-bold text-stone-800">{area}</p>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-          )}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                  {report.target && (
+                    <MetaItem icon="👨‍👩‍👧" label="対象" value={report.target} />
+                  )}
+                  {report.recommendation && (
+                    <MetaItem icon="📍" label="最推奨" value={report.recommendation} accent />
+                  )}
+                  {report.moveDate && (
+                    <MetaItem icon="📦" label="引越し" value={report.moveDate} />
+                  )}
+                  {report.budget && (
+                    <MetaItem icon="💰" label="予算" value={report.budget} />
+                  )}
+                </div>
 
-          {/* メタ情報 */}
-          <div className="flex flex-wrap gap-3 mb-8">
-            <MetaBadge icon="💰" label="予算" value={report.budget ?? '—'} />
-            <MetaBadge icon="🏠A" label="父方祖父母" value={report.grandparentsA ?? '—'} />
-            <MetaBadge icon="🏠B" label="母方祖父母" value={report.grandparentsB ?? '—'} />
-            <MetaBadge icon="📅" label="鑑定日" value={report.date} />
-          </div>
-
-          {/* レポート本文 */}
-          <div
-            className="prose-reading bg-white rounded-xl border border-stone-200 p-6 sm:p-10"
-            dangerouslySetInnerHTML={{ __html: report.content }}
-          />
-        </>
+                {report.areas && report.areas.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-stone-100">
+                    {report.areas.map((area) => (
+                      <span
+                        key={area}
+                        className="text-xs bg-stone-50 border border-stone-200 text-stone-500 px-2 py-0.5 rounded-full"
+                      >
+                        {area}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </Link>
+            )
+          })}
+        </div>
       )}
     </div>
   )
 }
 
-function SummaryCard({
+function MetaItem({
+  icon,
   label,
   value,
-  icon,
   accent = false,
 }: {
+  icon: string
   label: string
   value: string
-  icon: string
   accent?: boolean
 }) {
   return (
-    <div
-      className={`rounded-xl border p-4 ${
-        accent
-          ? 'border-[#0D7377] bg-teal-50'
-          : 'border-stone-200 bg-white'
-      }`}
-    >
-      <p className="text-lg mb-1">{icon}</p>
-      <p className="text-xs text-stone-400 mb-0.5">{label}</p>
-      <p className={`text-sm font-bold leading-snug ${accent ? 'text-[#0D7377]' : 'text-stone-700'}`}>
+    <div className={`rounded-lg p-2 ${accent ? 'bg-teal-50' : 'bg-stone-50'}`}>
+      <p className="text-stone-400 text-[10px] mb-0.5">{icon} {label}</p>
+      <p className={`font-medium leading-tight ${accent ? 'text-[#0D7377]' : 'text-stone-700'}`}>
         {value}
       </p>
-    </div>
-  )
-}
-
-function MetaBadge({ icon, label, value }: { icon: string; label: string; value: string }) {
-  return (
-    <div className="flex items-center gap-2 bg-stone-50 border border-stone-200 rounded-lg px-3 py-2 text-sm">
-      <span>{icon}</span>
-      <span className="text-stone-400 text-xs">{label}:</span>
-      <span className="text-stone-700 font-medium">{value}</span>
     </div>
   )
 }
